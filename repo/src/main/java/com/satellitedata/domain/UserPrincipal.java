@@ -22,7 +22,7 @@ public class UserPrincipal implements UserDetails {
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		// TODO Auto-generated method stub
-		return stream(this.user.getPermissions()).map(SimpleGrantedAuthority::new).collect(Collectors.toList());
+		return stream(this.user.getAuthorities()).map(SimpleGrantedAuthority::new).collect(Collectors.toList());
 	}
 
 	@Override
@@ -46,7 +46,7 @@ public class UserPrincipal implements UserDetails {
 	@Override
 	public boolean isAccountNonLocked() {
 		// TODO Auto-generated method stub
-		return this.user.isIsNotlocked();
+		return this.user.isIsnotlocked();
 	}
 
 	@Override

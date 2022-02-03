@@ -2,7 +2,6 @@ package com.satellitedata.model;
 
 import java.io.Serializable;
 import java.sql.Date;
-import java.time.LocalDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -32,15 +31,17 @@ public class User implements Serializable{
 	private Date lastlogindate;
 	private boolean isactive;
 	private boolean isnotlocked;
-	private String[] permissions;
+	private String[] authorities;
+	private String role;
 	
 	public User() {
 
 	}
-	
+
+
 	public User(int id, int country, int accesslevel, String firstname, String lastname, String username, String email,
 			String password, String contact, Date created, Date modified, Date lastlogindate, boolean isactive,
-			boolean islocked) {
+			boolean isnotlocked, String[] authorities, String role) {
 		super();
 		Id = id;
 		this.country = country;
@@ -55,9 +56,13 @@ public class User implements Serializable{
 		this.modified = modified;
 		this.lastlogindate = lastlogindate;
 		this.isactive = isactive;
-		this.isnotlocked = islocked;
+		this.isnotlocked = isnotlocked;
+		this.authorities = authorities;
+		this.role = role;
 	}
-	
+
+
+
 	public int getId() {
 		return Id;
 	}
@@ -130,12 +135,7 @@ public class User implements Serializable{
 	public void setIsactive(boolean isactive) {
 		this.isactive = isactive;
 	}
-	public boolean isIsNotlocked() {
-		return isnotlocked;
-	}
-	public void setIslocked(boolean isnotlocked) {
-		this.isnotlocked = isnotlocked;
-	}
+	
 	public java.sql.Date getLastlogindate() {
 		return lastlogindate;
 	}
@@ -143,12 +143,30 @@ public class User implements Serializable{
 		this.lastlogindate = (Date) date;
 	}
 
-	public String[] getPermissions() {
-		return permissions;
+	public boolean isIsnotlocked() {
+		return isnotlocked;
 	}
 
-	public void setPermissions(String[] permissions) {
-		this.permissions = permissions;
+	public void setIsnotlocked(boolean isnotlocked) {
+		this.isnotlocked = isnotlocked;
+	}
+
+	public String[] getAuthorities() {
+		return authorities;
+	}
+
+	public void setAuthorities(String[] authorities) {
+		this.authorities = authorities;
+	}
+
+
+	public String getRoles() {
+		return role;
+	}
+
+
+	public void setRoles(String role) {
+		this.role = role;
 	}
 
 	
