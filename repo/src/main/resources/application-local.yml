@@ -1,0 +1,28 @@
+jwt:
+  secret: '[a-zA-Z0-9._]^+$Guidelines89797987forAlphabeticalArraNumeralsandOtherSymbo$'
+
+server:
+  port: 8081
+
+spring:
+  application:
+  name: repo-service
+
+  datasource:
+    hikari:
+      connectionTimeout: 30000
+      maximumPoolSize: 10
+    driverClassName: com.microsoft.sqlserver.jdbc.SQLServerDriver
+    url: jdbc:sqlserver://localhost:1433;database=satellitedatabaserepo;
+    username: satelliterepo
+    password: 1234
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.SQLServerDialect
+        connection:
+          characterEncoding: UTF-8
+          useUnicode: true
+    show-sql: true
+    hibernate:
+      ddl-auto: none
