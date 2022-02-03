@@ -1,5 +1,7 @@
 package com.satellitedata.model;
 
+import java.io.Serializable;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -8,7 +10,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "ACCESSLEVEL")
-public class AccessLevel {
+public class AccessLevel implements Serializable {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -16,6 +18,7 @@ public class AccessLevel {
 	private String accessname;
 	private java.sql.Date created;
 	private java.sql.Date modified;
+	private String[] permissions;
 	
 	public int getAccesslevels() {
 		return accesslevels;
@@ -40,6 +43,12 @@ public class AccessLevel {
 	}
 	public void setModified(java.sql.Date modified) {
 		this.modified = modified;
+	}
+	public String[] getPermissions() {
+		return permissions;
+	}
+	public void setPermissions(String[] permissions) {
+		this.permissions = permissions;
 	}
 
 }

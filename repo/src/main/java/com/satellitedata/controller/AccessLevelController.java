@@ -34,7 +34,6 @@ public class AccessLevelController {
 	public Optional<AccessLevel> getByAccessname(@RequestParam(value= "accessname") String accessname) {
 		return accesslevelService.getByAccessname(accessname);
 	}
-
 		
 	@PostMapping("/save")
 	public boolean saveUser(@RequestBody(required=true) AccessLevel accesslevel) {
