@@ -10,6 +10,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 @Entity
 @Table(name = "USERS")
 public class User implements Serializable{
@@ -17,15 +19,16 @@ public class User implements Serializable{
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(nullable = false, updatable = false)
-	private int Id;
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+	private Long id;
+	private String userid;
 	private int country;
-	private int accesslevel;
 	private String firstname;
 	private String lastname;
 	private String username;
 	private String email;
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	private String password;
-	private String contact;
 	private Date created;
 	private Date modified;
 	private Date lastlogindate;
@@ -38,20 +41,18 @@ public class User implements Serializable{
 
 	}
 
-
-	public User(int id, int country, int accesslevel, String firstname, String lastname, String username, String email,
-			String password, String contact, Date created, Date modified, Date lastlogindate, boolean isactive,
-			boolean isnotlocked, String[] authorities, String role) {
+	public User(Long id, String userid, int country, String firstname, String lastname, String username, String email,
+			String password, Date created, Date modified, Date lastlogindate, boolean isactive, boolean isnotlocked,
+			String[] authorities, String role) {
 		super();
-		Id = id;
+		this.id = id;
+		this.userid = userid;
 		this.country = country;
-		this.accesslevel = accesslevel;
 		this.firstname = firstname;
 		this.lastname = lastname;
 		this.username = username;
 		this.email = email;
 		this.password = password;
-		this.contact = contact;
 		this.created = created;
 		this.modified = modified;
 		this.lastlogindate = lastlogindate;
@@ -61,25 +62,37 @@ public class User implements Serializable{
 		this.role = role;
 	}
 
+	public String getUserid() {
+		return userid;
+	}
 
 
-	public int getId() {
-		return Id;
+
+
+	public void setUserid(String userid) {
+		this.userid = userid;
 	}
-	public void setId(int id) {
-		Id = id;
+
+
+
+
+	public Long getId() {
+		return id;
 	}
+
+
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+
+
 	public int getCountry() {
 		return country;
 	}
 	public void setCountry(int country) {
 		this.country = country;
-	}
-	public int getAccesslevel() {
-		return accesslevel;
-	}
-	public void setAccesslevel(int accesslevel) {
-		this.accesslevel = accesslevel;
 	}
 	public String getFirstname() {
 		return firstname;
@@ -110,12 +123,6 @@ public class User implements Serializable{
 	}
 	public void setPassword(String password) {
 		this.password = password;
-	}
-	public String getContact() {
-		return contact;
-	}
-	public void setContact(String contact) {
-		this.contact = contact;
 	}
 	public java.sql.Date getCreated() {
 		return created;
@@ -159,15 +166,14 @@ public class User implements Serializable{
 		this.authorities = authorities;
 	}
 
-
-	public String getRoles() {
+	public String getRole() {
 		return role;
 	}
 
-
-	public void setRoles(String role) {
+	public void setRole(String role) {
 		this.role = role;
 	}
+
 
 	
 }
