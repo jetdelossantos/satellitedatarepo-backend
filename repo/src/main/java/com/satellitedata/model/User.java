@@ -1,7 +1,7 @@
 package com.satellitedata.model;
 
 import java.io.Serializable;
-import java.sql.Date;
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -124,13 +124,13 @@ public class User implements Serializable{
 	public void setPassword(String password) {
 		this.password = password;
 	}
-	public java.sql.Date getCreated() {
+	public java.util.Date getCreated() {
 		return created;
 	}
 	public void setCreated(java.sql.Date created) {
 		this.created = created;
 	}
-	public java.sql.Date getModified() {
+	public java.util.Date getModified() {
 		return modified;
 	}
 	public void setModified(java.sql.Date modified) {
@@ -143,7 +143,7 @@ public class User implements Serializable{
 		this.isactive = isactive;
 	}
 	
-	public java.sql.Date getLastlogindate() {
+	public java.util.Date getLastlogindate() {
 		return lastlogindate;
 	}
 	public void setLastlogindate(java.util.Date date) {

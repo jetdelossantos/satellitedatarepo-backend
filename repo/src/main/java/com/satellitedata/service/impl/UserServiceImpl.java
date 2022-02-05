@@ -149,20 +149,17 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
 	@Override
 	public List<User> getUsers() {
-		// TODO Auto-generated method stub
-		return null;
+		return userRepository.findAll();
 	}
 
 	@Override
 	public User findUserByUsername(String username) {
-		// TODO Auto-generated method stub
-		return null;
+		return userRepository.findUserByUsername(username);
 	}
 
 	@Override
 	public User findUserByEmail(String email) {
-		// TODO Auto-generated method stub
-		return null;
+		return userRepository.findUserByEmail(email);
 	}
 
 }
