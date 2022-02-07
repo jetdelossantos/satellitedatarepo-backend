@@ -1,6 +1,5 @@
 package com.satellitedata.listener;
 
-import com.satellitedata.model.User;
 import com.satellitedata.domain.UserPrincipal;
 import com.satellitedata.service.LoginAttemptService;
 import org.springframework.beans.factory.annotation.Autowired;

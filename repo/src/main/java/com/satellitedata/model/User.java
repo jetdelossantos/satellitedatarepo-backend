@@ -31,6 +31,7 @@ public class User implements Serializable{
 	private String password;
 	private Date created;
 	private Date modified;
+    private String profileImageUrl;
 	private Date lastlogindate;
 	private boolean isactive;
 	private boolean isnotlocked;
@@ -42,8 +43,8 @@ public class User implements Serializable{
 	}
 
 	public User(Long id, String userid, int country, String firstname, String lastname, String username, String email,
-			String password, Date created, Date modified, Date lastlogindate, boolean isactive, boolean isnotlocked,
-			String[] authorities, String role) {
+			String password, Date created, Date modified, String profileImageUrl, Date lastlogindate, boolean isactive,
+			boolean isnotlocked, String[] authorities, String role) {
 		super();
 		this.id = id;
 		this.userid = userid;
@@ -55,6 +56,7 @@ public class User implements Serializable{
 		this.password = password;
 		this.created = created;
 		this.modified = modified;
+		this.profileImageUrl = profileImageUrl;
 		this.lastlogindate = lastlogindate;
 		this.isactive = isactive;
 		this.isnotlocked = isnotlocked;
@@ -68,6 +70,14 @@ public class User implements Serializable{
 
 
 
+
+	public String getProfileImageUrl() {
+		return profileImageUrl;
+	}
+
+	public void setProfileImageUrl(String profileImageUrl) {
+		this.profileImageUrl = profileImageUrl;
+	}
 
 	public void setUserid(String userid) {
 		this.userid = userid;

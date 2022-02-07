@@ -9,15 +9,7 @@ import com.satellitedata.model.User;
 
 public interface UserRepository extends JpaRepository<User, Integer>{
 
-	Optional<User> findByEmail(String email);
+    User findUserByUsername(String username);
 
-	Optional<User> findByUsername(String username);
-
-	Optional<User> findById(int id);
-	
-	List<User> findAll();
-	
-	User findUserByUsername(String username);
-
-	User findUserByEmail(String email);
+    User findUserByEmail(String email);
 }
