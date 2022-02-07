@@ -25,6 +25,7 @@ import com.satellitedata.exception.domain.UserNotFoundException;
 import com.satellitedata.exception.domain.UsernameExistException;
 import com.satellitedata.model.User;
 import com.satellitedata.repository.UserRepository;
+import com.satellitedata.service.LoginAttemptService;
 import com.satellitedata.service.UserService;
 
 import static com.satellitedata.constant.UserImplConstant.*;
@@ -39,6 +40,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 	private Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
 	@Autowired BCryptPasswordEncoder passwordEncoder;	
 	@Autowired UserRepository userRepository;
+	@Autowired LoginAttemptService loginAttemptService;
 	
 	@Override
 	public List<User> findAll() {
@@ -77,6 +79,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 			LOGGER.error("User not found by username: " + username);
 			throw new UsernameNotFoundException("User not found by username: " + username);
 		} else {
+			validateLoginAttempt(user);
 			user.setLastlogindate(new Date());
 			userRepository.save(user);
 			UserPrincipal userPrincipal = new UserPrincipal(user);
@@ -85,7 +88,17 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 		}	
 	}
 
-    @Override
+    private void validateLoginAttempt(User user) {
+		if(user.isIsnotlocked()) {
+			if(loginAttemptService.hasExceededMaxAttempts(user.getUsername())) {
+				user.setIsnotlocked(false);
+			}
+		}else {
+			loginAttemptService.evictUserFromLoginAttemptCache(user.getUsername());
+		}
+	}
+
+	@Override
     public User register(String firstName, String lastName, String username, String email, int country) 
     		throws UserNotFoundException, UsernameExistException, EmailExistException {
     	
@@ -100,6 +113,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         user.setCountry(country);
         user.setPassword(encodePassword(password));
         user.setIsactive(true);
+        user.setCreated(new Date());
         user.setIsnotlocked(true);
         user.setRole(ROLE_USER.name());
         user.setAuthorities(ROLE_USER.getAuthorities());

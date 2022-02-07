@@ -127,8 +127,8 @@ public class User implements Serializable{
 	public java.util.Date getCreated() {
 		return created;
 	}
-	public void setCreated(java.sql.Date created) {
-		this.created = created;
+	public void setCreated(java.util.Date date) {
+		this.created = date;
 	}
 	public java.util.Date getModified() {
 		return modified;
