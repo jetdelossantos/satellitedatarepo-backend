@@ -1,7 +1,11 @@
 package com.satellitedata.service.impl;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -40,6 +44,8 @@ import com.satellitedata.service.UserService;
 import static com.satellitedata.constant.UserImplConstant.*;
 import static com.satellitedata.enumeration.Role.*;
 import static com.satellitedata.constant.FileConstant.*;
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
+import static org.springframework.http.MediaType.*;
 	
 @Service
 @Transactional
@@ -187,11 +193,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return user;
 	}
 
-	private void saveProfileImage(User user, MultipartFile profileImage) {
-		// TODO Auto-generated method stub
-		
-	}
-
 	private Role getRoleEnumName(String role) {
 		return Role.valueOf(role.toUpperCase());
 	}
@@ -213,13 +214,30 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return currentUser;
     }
     
-	@Override
-	public void deleteUser(long id) {
-		userRepository.deleteById((int) id);
-		
-	}
+    private void saveProfileImage(User user, MultipartFile profileImage) throws IOException, NotAnImageFileException {
+        if (profileImage != null) {
+            if(!Arrays.asList(IMAGE_JPEG_VALUE, IMAGE_PNG_VALUE, IMAGE_GIF_VALUE).contains(profileImage.getContentType())) {
+                throw new NotAnImageFileException(profileImage.getOriginalFilename() + NOT_AN_IMAGE_FILE);
+            }
+            Path userFolder = Paths.get(USER_FOLDER + user.getUsername()).toAbsolutePath().normalize();
+            if(!Files.exists(userFolder)) {
+                Files.createDirectories(userFolder);
+                LOGGER.info(DIRECTORY_CREATED + userFolder);
+            }
+            Files.deleteIfExists(Paths.get(userFolder + user.getUsername() + DOT + JPG_EXTENSION));
+            Files.copy(profileImage.getInputStream(), userFolder.resolve(user.getUsername() + DOT + JPG_EXTENSION), REPLACE_EXISTING);
+            user.setProfileImageUrl(setProfileImageUrl(user.getUsername()));
+            userRepository.save(user);
+            LOGGER.info(FILE_SAVED_IN_FILE_SYSTEM + profileImage.getOriginalFilename());
+        }
+    }
 
-    @Override
+    private String setProfileImageUrl(String username) {
+        return ServletUriComponentsBuilder.fromCurrentContextPath().path(USER_IMAGE_PATH + username + FORWARD_SLASH
+        + username + DOT + JPG_EXTENSION).toUriString();
+    }
+
+	@Override
     public void resetPassword(String email) throws MessagingException, EmailNotFoundException {
         User user = userRepository.findUserByEmail(email);
         if (user == null) {
