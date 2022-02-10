@@ -2,6 +2,7 @@ package com.satellitedata.service.impl;
 
 import java.util.Arrays;
 import java.util.Date;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -26,6 +27,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.apache.commons.*;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.junit.platform.commons.util.StringUtils;
 
 import com.satellitedata.domain.UserPrincipal;
@@ -110,7 +112,15 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         emailService.sendNewPasswordEmail(firstName, password, email);
         return user;
     }
-
+	
+    @Override
+    public void deleteUser(String username) throws IOException {
+        User user = userRepository.findUserByUsername(username);
+        Path userFolder = Paths.get(USER_FOLDER + user.getUsername()).toAbsolutePath().normalize();
+        FileUtils.deleteDirectory(new File(userFolder.toString()));
+        userRepository.deleteById(user.getId());
+    }
+    
     private String getTemporaryProfileImageUrl(String username) {
         return ServletUriComponentsBuilder.fromCurrentContextPath().path(DEFAULT_USER_IMAGE_PATH + username).toUriString();
     }
@@ -256,6 +266,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         saveProfileImage(user, profileImage);
         return user;
     }
+
+
 
 	
 }
