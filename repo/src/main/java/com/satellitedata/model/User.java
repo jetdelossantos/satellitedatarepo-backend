@@ -68,9 +68,6 @@ public class User implements Serializable{
 		return userid;
 	}
 
-
-
-
 	public String getProfileImageUrl() {
 		return profileImageUrl;
 	}
@@ -83,72 +80,81 @@ public class User implements Serializable{
 		this.userid = userid;
 	}
 
-
-
-
 	public Long getId() {
 		return id;
 	}
-
-
 
 	public void setId(Long id) {
 		this.id = id;
 	}
 
-
-
 	public int getCountry() {
 		return country;
 	}
+	
 	public void setCountry(int country) {
 		this.country = country;
 	}
+	
 	public String getFirstname() {
 		return firstname;
 	}
+	
 	public void setFirstname(String firstname) {
 		this.firstname = firstname;
 	}
+	
 	public String getLastname() {
 		return lastname;
 	}
+	
 	public void setLastname(String lastname) {
 		this.lastname = lastname;
 	}
+	
 	public String getUsername() {
 		return username;
 	}
+	
 	public void setUsername(String username) {
 		this.username = username;
 	}
+	
 	public String getEmail() {
 		return email;
 	}
 	public void setEmail(String email) {
 		this.email = email;
 	}
+	
 	public String getPassword() {
 		return password;
 	}
+	
 	public void setPassword(String password) {
 		this.password = password;
 	}
+	
 	public java.util.Date getCreated() {
 		return created;
 	}
+	
 	public void setCreated(java.util.Date date) {
 		this.created = date;
 	}
+	
 	public java.util.Date getModified() {
 		return modified;
 	}
+	
 	public void setModified(java.sql.Date modified) {
 		this.modified = modified;
 	}
+	
 	public boolean isIsactive() {
 		return isactive;
 	}
+	
 	public void setIsactive(boolean isactive) {
 		this.isactive = isactive;
 	}
@@ -156,6 +162,7 @@ public class User implements Serializable{
 	public java.util.Date getLastlogindate() {
 		return lastlogindate;
 	}
+	
 	public void setLastlogindate(java.util.Date date) {
 		this.lastlogindate = (Date) date;
 	}
@@ -183,7 +190,4 @@ public class User implements Serializable{
 	public void setRole(String role) {
 		this.role = role;
 	}
-
-
-	
 }

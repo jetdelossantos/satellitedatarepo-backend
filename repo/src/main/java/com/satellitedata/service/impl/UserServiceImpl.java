@@ -53,14 +53,15 @@ import static org.springframework.http.MediaType.*;
 @Transactional
 @Qualifier("userDetailsService")
 public class UserServiceImpl implements UserService, UserDetailsService {
-	
+	//Declarations
 	private static final String EMPTY = null;
 	private Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
 	@Autowired BCryptPasswordEncoder passwordEncoder;	
 	@Autowired UserRepository userRepository;
 	@Autowired LoginAttemptService loginAttemptService;
 	@Autowired EmailService emailService;
-
+	
+	//LOGIN USER
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		User user = userRepository.findUserByUsername(username);
@@ -76,7 +77,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 			return userPrincipal;
 		}	
 	}
-
+	
+	//Multiple Login Catcher
     private void validateLoginAttempt(User user) {
 		if(user.isIsnotlocked()) {
 			if(loginAttemptService.hasExceededMaxAttempts(user.getUsername())) {
@@ -87,9 +89,13 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 		}
 	}
 
+    //USER REGISTRATION
 	@Override
-    public User register(String firstName, String lastName, String username, String email, int country) 
-    		throws UserNotFoundException, UsernameExistException, EmailExistException, MessagingException {
+    public User register(String firstName, 
+    					 String lastName,
+    					 String username, 
+    					 String email, 
+    					 int country) throws UserNotFoundException, UsernameExistException, EmailExistException, MessagingException {
     	
         validateNewUsernameAndEmail(EMPTY, username, email);
         User user = new User();
@@ -113,6 +119,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return user;
     }
 	
+	//DELETE USER
     @Override
     public void deleteUser(String username) throws IOException {
         User user = userRepository.findUserByUsername(username);
@@ -121,23 +128,10 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         userRepository.deleteById(user.getId());
     }
     
-    private String getTemporaryProfileImageUrl(String username) {
-        return ServletUriComponentsBuilder.fromCurrentContextPath().path(DEFAULT_USER_IMAGE_PATH + username).toUriString();
-    }
 
-	private String encodePassword(String password) {
-		return passwordEncoder.encode(password);
-	}
-
-	private String generatePassword() {
-		return RandomStringUtils.randomAlphanumeric(10);
-	}
-
-	private String generateUserId() {
-		return RandomStringUtils.randomNumeric(10);
-	}
-
-	private User validateNewUsernameAndEmail(String currentUsername, String newUsername, String newEmail) throws UserNotFoundException, UsernameExistException, EmailExistException {
+	private User validateNewUsernameAndEmail(String currentUsername, 
+											 String newUsername, 
+											 String newEmail) throws UserNotFoundException, UsernameExistException, EmailExistException {
         User userByNewUsername = findUserByUsername(newUsername);
         User userByNewEmail = findUserByEmail(newEmail);
         if(StringUtils.isNotBlank(currentUsername)) {
@@ -179,8 +173,15 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 	}
 
 	@Override
-	public User addNewUser(String firstname, String lastname, String username, String email, int country, String role,
-			boolean isNotLocked, boolean isActive, MultipartFile profileImage) throws UserNotFoundException, UsernameExistException, EmailExistException, IOException, NotAnImageFileException{
+	public User addNewUser(String firstname, 
+						   String lastname, 
+						   String username, 
+						   String email, 
+						   int country, 
+						   String role,
+						   boolean isNotLocked, 
+						   boolean isActive, 
+						   MultipartFile profileImage) throws UserNotFoundException, UsernameExistException, EmailExistException, IOException, NotAnImageFileException{
         validateNewUsernameAndEmail (EMPTY, username, email);
 		User user = new User();
         String password = generatePassword();
@@ -208,7 +209,17 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 	}
 
     @Override
-    public User updateUser(String currentUsername, String newFirstName, String newLastName, String newUsername, String newEmail, int newCountry, String role, boolean isNonLocked, boolean isActive, MultipartFile profileImage) throws UserNotFoundException, UsernameExistException, EmailExistException, IOException, NotAnImageFileException {
+    public User updateUser(String currentUsername, 
+    					   String newFirstName, 
+    					   String newLastName, 
+    					   String newUsername, 
+    					   String newEmail, 
+    					   int newCountry, 
+    					   String role, 
+    					   boolean isNonLocked, 
+    					   boolean isActive, 
+    					   MultipartFile profileImage) throws UserNotFoundException, UsernameExistException, EmailExistException, IOException, NotAnImageFileException {
+    	
         User currentUser = validateNewUsernameAndEmail(currentUsername, newUsername, newEmail);
         currentUser.setFirstname(newFirstName);
         currentUser.setLastname(newLastName);
@@ -267,7 +278,21 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return user;
     }
 
+    private String getTemporaryProfileImageUrl(String username) {
+        return ServletUriComponentsBuilder.fromCurrentContextPath().path(DEFAULT_USER_IMAGE_PATH + username).toUriString();
+    }
 
+	private String encodePassword(String password) {
+		return passwordEncoder.encode(password);
+	}
+
+	private String generatePassword() {
+		return RandomStringUtils.randomAlphanumeric(10);
+	}
+
+	private String generateUserId() {
+		return RandomStringUtils.randomNumeric(10);
+	}
 
 	
 }

@@ -13,7 +13,11 @@ import com.satellitedata.model.User;
 
 public interface UserService {
 	
-	User register(String firstname, String lastname, String username, String email, int country) throws UserNotFoundException, UsernameExistException, EmailExistException, MessagingException;
+	User register(String firstname, 
+				  String lastname, 
+				  String username, 
+				  String email, 
+				  int country) throws UserNotFoundException, UsernameExistException, EmailExistException, MessagingException;
 	
 	List<User> getUsers();
 	
@@ -21,9 +25,26 @@ public interface UserService {
 	
 	User findUserByEmail(String email);
 	
-	User addNewUser(String firstname, String lastname, String username, String email, int country, String role, boolean isNotLocked, boolean isActive, MultipartFile profileImage) throws UserNotFoundException, UsernameExistException, EmailExistException, IOException, NotAnImageFileException;
+	User addNewUser(String firstname, 
+					String lastname,
+					String username, 
+					String email, 
+					int country, 
+					String role, 
+					boolean isNotLocked, 
+					boolean isActive, 
+					MultipartFile profileImage) throws UserNotFoundException, UsernameExistException, EmailExistException, IOException, NotAnImageFileException;
 	
-	User updateUser(String currentUsername, String newFirstName, String newLastName, String newUsername, String newEmail, int newCountry, String role, boolean isNonLocked, boolean isActive, MultipartFile profileImage) throws UserNotFoundException, UsernameExistException, EmailExistException, IOException, NotAnImageFileException;	
+	User updateUser(String currentUsername, 
+					String newFirstName, 
+					String newLastName, 
+					String newUsername, 
+					String newEmail, 
+					int newCountry, 
+					String role, 
+					boolean isNonLocked, 
+					boolean isActive,
+					MultipartFile profileImage) throws UserNotFoundException, UsernameExistException, EmailExistException, IOException, NotAnImageFileException;	
 	
 	void resetPassword(String email) throws MessagingException, EmailNotFoundException;
 	
