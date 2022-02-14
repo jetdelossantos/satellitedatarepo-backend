@@ -28,6 +28,7 @@ public class RepoApplication {
 	
 	public static void main(String[] args) {
 		SpringApplication.run(RepoApplication.class, args);
+		
 		new File(USER_FOLDER).mkdirs();
 		try {
 			LOGGER.info(USER_FOLDER);

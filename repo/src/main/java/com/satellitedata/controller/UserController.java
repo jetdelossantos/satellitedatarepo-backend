@@ -110,7 +110,7 @@ public class UserController extends ExceptionHandling{
                                        @RequestParam("country") int country,
                                        @RequestParam("role") String role,
                                        @RequestParam("isActive") String isActive,
-                                       @RequestParam("isNonLocked") String isNonLocked,
+                                       @RequestParam("isNotLocked") String isNonLocked,
                                        @RequestParam(value = "profileImage", required = false) MultipartFile profileImage) throws UserNotFoundException, UsernameExistException, EmailExistException, IOException, NotAnImageFileException {
         User updatedUser = userService.updateUser(currentUsername, 
         										  firstName, 
@@ -158,7 +158,8 @@ public class UserController extends ExceptionHandling{
     }
 
     @GetMapping(path = "/image/{username}/{fileName}", produces = IMAGE_JPEG_VALUE)
-    public byte[] getProfileImage(@PathVariable("username") String username, @PathVariable("fileName") String fileName) throws IOException {
+    public byte[] getProfileImage(@PathVariable("username") String username, 
+    							  @PathVariable("fileName") String fileName) throws IOException {
         return Files.readAllBytes(Paths.get(USER_FOLDER + username + FORWARD_SLASH + fileName));
     }
 
@@ -177,8 +178,11 @@ public class UserController extends ExceptionHandling{
     }
 
     private ResponseEntity<HttpResponse> response(HttpStatus httpStatus, String message) {
-        return new ResponseEntity<>(new HttpResponse(httpStatus.value(), httpStatus, httpStatus.getReasonPhrase().toUpperCase(),
-                message), httpStatus);
+    	HttpResponse body = new HttpResponse(httpStatus.value(), 
+				 							 httpStatus,
+				 							 httpStatus.getReasonPhrase().toUpperCase(),
+				 							 message.toUpperCase());
+        return new ResponseEntity<>(body, httpStatus);
     }
     
     private HttpHeaders getJwtHeader(UserPrincipal user) {
