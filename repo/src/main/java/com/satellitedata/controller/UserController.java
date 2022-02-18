@@ -35,6 +35,7 @@ import com.satellitedata.exception.ExceptionHandling;
 import com.satellitedata.exception.domain.EmailExistException;
 import com.satellitedata.exception.domain.EmailNotFoundException;
 import com.satellitedata.exception.domain.NotAnImageFileException;
+import com.satellitedata.exception.domain.PasswordIncorrectException;
 import com.satellitedata.exception.domain.UserNotFoundException;
 import com.satellitedata.exception.domain.UsernameExistException;
 import com.satellitedata.model.User;
@@ -123,6 +124,15 @@ public class UserController extends ExceptionHandling{
         										  Boolean.parseBoolean(isActive), 
         										  profileImage);
         return new ResponseEntity<>(updatedUser, OK);
+    }
+    
+    @PostMapping("/changepassword")
+    public ResponseEntity<User> changePassword (@RequestParam("currentUsername") String currentUsername,
+									            @RequestParam("oldpassword") String oldPassword,
+									            @RequestParam("newpassword") String newPassword) throws UserNotFoundException, UsernameExistException, IOException, PasswordIncorrectException {
+    	User updatedUser = userService.changePassword(currentUsername, oldPassword, newPassword);
+    	return new ResponseEntity<>(updatedUser, OK);
+    	
     }
     
     @GetMapping("/find/{username}")

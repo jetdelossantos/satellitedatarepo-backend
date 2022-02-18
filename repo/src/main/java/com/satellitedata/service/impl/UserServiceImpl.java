@@ -35,6 +35,7 @@ import com.satellitedata.enumeration.Role;
 import com.satellitedata.exception.domain.EmailExistException;
 import com.satellitedata.exception.domain.EmailNotFoundException;
 import com.satellitedata.exception.domain.NotAnImageFileException;
+import com.satellitedata.exception.domain.PasswordIncorrectException;
 import com.satellitedata.exception.domain.UserNotFoundException;
 import com.satellitedata.exception.domain.UsernameExistException;
 import com.satellitedata.model.User;
@@ -156,6 +157,25 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             return null;
         }
     }
+	
+	private User validateCurrentUsernameAndPassword(String currentUsername, String oldPassword) throws UserNotFoundException, PasswordIncorrectException {
+		if(StringUtils.isNotBlank(currentUsername) && StringUtils.isNotBlank(oldPassword) ) {
+			User currentUser = findUserByUsername(currentUsername);
+			if(currentUser == null) {
+				throw new UserNotFoundException(NO_USER_FOUND_BY_USERNAME + currentUsername);
+			} else {
+				String userpassword = currentUser.getPassword();
+				Boolean matchedpassword = passwordEncoder.matches(oldPassword, userpassword);
+				if (matchedpassword == true) {
+					return currentUser;
+				} else {
+					throw new PasswordIncorrectException(PASSWORD_INCORRECT);
+				}
+			}
+		} else {
+			return null;
+		}
+	}
 
 	@Override
 	public List<User> getUsers() {
@@ -294,5 +314,11 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 		return RandomStringUtils.randomNumeric(10);
 	}
 
-	
+	@Override
+	public User changePassword(String currentUsername, String oldPassword, String newPassword) throws UserNotFoundException, UsernameExistException, IOException, PasswordIncorrectException {
+		User currentUser = validateCurrentUsernameAndPassword(currentUsername, oldPassword);
+		currentUser.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(currentUser);
+        return currentUser;	
+	}	
 }

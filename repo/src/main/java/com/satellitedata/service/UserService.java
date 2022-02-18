@@ -51,5 +51,8 @@ public interface UserService {
 	User updateProfileImage(String username, MultipartFile profileImage) throws UserNotFoundException, UsernameExistException, EmailExistException, IOException, NotAnImageFileException;
 
 	void deleteUser(String username) throws IOException;
+	
+	User changePassword (String currentUsername, String oldPassword, String newPassword) throws UserNotFoundException, UsernameExistException, IOException, PasswordIncorrectException;
 }
+
 
