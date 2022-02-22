@@ -81,14 +81,14 @@ public class UserController extends ExceptionHandling{
     }
     
     @PostMapping("/add")
-    public ResponseEntity<User> addNewUser(@RequestParam("firstName") String firstName,
-                                           @RequestParam("lastName") String lastName,
+    public ResponseEntity<User> addNewUser(@RequestParam("firstname") String firstName,
+                                           @RequestParam("lastname") String lastName,
                                            @RequestParam("username") String username,
                                            @RequestParam("email") String email,
                                            @RequestParam("country") int country,
                                            @RequestParam("role") String role,
-                                           @RequestParam("isActive") String isActive,
-                                           @RequestParam("isNotLocked") String isNotLocked,
+                                           @RequestParam("isactive") String isActive,
+                                           @RequestParam("isnotlocked") String isNotLocked,
                                            @RequestParam(value = "profileImage", required = false) MultipartFile profileImage) throws UserNotFoundException, UsernameExistException, EmailExistException, IOException, NotAnImageFileException {
         User newUser = userService.addNewUser(firstName, 
         									lastName, 
@@ -104,18 +104,18 @@ public class UserController extends ExceptionHandling{
 	
     @PostMapping("/update")
     public ResponseEntity<User> update(@RequestParam("currentUsername") String currentUsername,
-                                       @RequestParam("firstName") String firstName,
-                                       @RequestParam("lastName") String lastName,
+                                       @RequestParam("firstname") String firstName,
+                                       @RequestParam("lastname") String lastName,
                                        @RequestParam("username") String username,
                                        @RequestParam("email") String email,
                                        @RequestParam("country") int country,
                                        @RequestParam("role") String role,
-                                       @RequestParam("isActive") String isActive,
-                                       @RequestParam("isNotLocked") String isNonLocked,
+                                       @RequestParam("isactive") String isActive,
+                                       @RequestParam("isnotlocked") String isNonLocked,
                                        @RequestParam(value = "profileImage", required = false) MultipartFile profileImage) throws UserNotFoundException, UsernameExistException, EmailExistException, IOException, NotAnImageFileException {
         User updatedUser = userService.updateUser(currentUsername, 
         										  firstName, 
-        										  lastName, 
+       										  lastName, 
         										  username,
         										  email, 
         										  country, 
