@@ -82,7 +82,7 @@ public class SatelliteFileDataServiceImpl implements SatelliteFileDataService {
 	@Override
 	public SatelliteFileData uploadFile(MultipartFile multipartFile, String uploader) throws FileUploadErrorException, IOException {
 		if(checkValidFile(multipartFile)) {
-			saveFileInStorage(multipartFile);
+			Path filePath = saveFileInStorage(multipartFile);
 			//parseFileForDB(multipartFile);
 			SatelliteFileData satelliteDataFile = new SatelliteFileData();
 			satelliteDataFile.setFilename(multipartFile.getOriginalFilename());
@@ -90,7 +90,8 @@ public class SatelliteFileDataServiceImpl implements SatelliteFileDataService {
 			satelliteDataFile.setCreated(new Date());
 			satelliteDataFile.setFilesize(getFileByteSize(multipartFile));
 			satelliteDataFile.setData(getFileByteData(multipartFile));
-			satelliteDataFile.setFormat(uploader);
+			satelliteDataFile.setFilenameUrl(filePath.toString());
+			satelliteDataFile.setFormat(null);
 			satelliteDataFile.setDownloads(0);
 			satfiledatarepo.save(satelliteDataFile);
 			return satelliteDataFile;
@@ -121,7 +122,7 @@ public class SatelliteFileDataServiceImpl implements SatelliteFileDataService {
 		}
 	}
 
-	private void saveFileInStorage(MultipartFile multipartFile) throws IOException {
+	private Path saveFileInStorage(MultipartFile multipartFile) throws IOException {
 		String filename = StringUtils.cleanPath(multipartFile.getOriginalFilename());
 		Path fileStorage = get(SATDATA_FOLDER, filename).toAbsolutePath().normalize();
 		if(!Files.exists(fileStorage)) {
@@ -129,28 +130,36 @@ public class SatelliteFileDataServiceImpl implements SatelliteFileDataService {
         }
 		try {
 			copy(multipartFile.getInputStream(), fileStorage, REPLACE_EXISTING);
+			return fileStorage;
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		return fileStorage;
 	}
 
 	@Override
 	public void deleteFile(Long id) throws IOException {
 		SatelliteFileData satelliteFileData = satfiledatarepo.findSatelliteFileDataById(id);
         Path satfiledataFolder = Paths.get(SATDATA_FOLDER + satelliteFileData.getFilename()).toAbsolutePath().normalize();
-        FileUtils.deleteDirectory(new File(satfiledataFolder.toString()));
-        satfiledatarepo.deleteById(satelliteFileData.getId());
+        if (!Files.exists(satfiledataFolder)) {
+        	FileUtils.deleteDirectory(new File(satfiledataFolder.toString()));
+        }
+        if (satelliteFileData != null) {
+            satfiledatarepo.deleteById(satelliteFileData.getId());
+        }
 	}
 
 	@Override
-	public void downloadFile(Long id) throws IOException {
+	public Resource downloadFile(Long id) throws IOException {
 		SatelliteFileData satellitefiledata = satfiledatarepo.getById(id);
 		String filename = satellitefiledata.getFilename();
 		Path filePath = get(SATDATA_FOLDER).toAbsolutePath().normalize().resolve(filename);
         if(!Files.exists(filePath)) {
             throw new FileNotFoundException(filename + " was not found on the server");
         }
-		
+        Resource resource = new UrlResource(filePath.toUri());
+       return resource;
+	
 	}
 
 }

@@ -3,6 +3,7 @@ package com.satellitedata.service;
 import java.io.IOException;
 import java.util.List;
 
+import org.springframework.core.io.Resource;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.satellitedata.exception.domain.FileUploadErrorException;
@@ -33,7 +34,7 @@ public interface SatelliteFileDataService {
 	  
 	  void deleteFile(Long id) throws IOException;
 	  
-	  void downloadFile(Long id) throws IOException;
+	  Resource downloadFile(Long id) throws IOException;
 
 	  SatelliteFileData uploadFile(MultipartFile MultipartFile, String uploader) throws FileUploadErrorException, IOException;
 }

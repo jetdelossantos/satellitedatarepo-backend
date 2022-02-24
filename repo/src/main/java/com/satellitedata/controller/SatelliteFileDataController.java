@@ -65,48 +65,53 @@ import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
 
 @RestController
 @RequestMapping("/satfile")
-public class SatelliteFileDataController {
-	
+public class SatelliteFileDataController extends ExceptionHandling {
+	 public static final String FILE_DELETED_SUCCESSFULLY = "File deleted successfully";
+	 
 	@Autowired SatelliteFileDataService satfiledataservice;
 	//defining a location
 	
-	//defining a method to upload
-	@PostMapping("/uploadsatfile")
-	public ResponseEntity<List<String>> uploadFiles(@RequestParam("files") List<MultipartFile> multipartFiles)  throws IOException {
-		List<String> filenames = new ArrayList<>();
-		for(MultipartFile file: multipartFiles) {
-			String filename = StringUtils.cleanPath(file.getOriginalFilename());
-			//method to parse data 
-			Path fileStorage = get(SATDATA_FOLDER, filename).toAbsolutePath().normalize();
-			try {
-				copy(file.getInputStream(),fileStorage, REPLACE_EXISTING);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			filenames.add(filename);
-		}
-		return ResponseEntity.ok().body(filenames);
+	@PostMapping("/uploadfile")
+	public ResponseEntity<SatelliteFileData> uploadFile(@RequestParam("file") MultipartFile multipartFile,
+														@RequestParam("uploader") String uploader)  throws IOException, FileUploadErrorException {
+		SatelliteFileData satelliteFileData = satfiledataservice.uploadFile(multipartFile, uploader);
+		return new ResponseEntity<>(satelliteFileData, OK);
 	}
-	//define a method to download files
-	@GetMapping("downloadsatfile/{filename}")
-    public ResponseEntity<Resource> downloadFiles(@PathVariable("filename") String filename) throws IOException {
-        Path filePath = get(SATDATA_FOLDER).toAbsolutePath().normalize().resolve(filename);
-        if(!Files.exists(filePath)) {
-            throw new FileNotFoundException(filename + " was not found on the server");
-        }
-        Resource resource = new UrlResource(filePath.toUri());
-        HttpHeaders httpHeaders = new HttpHeaders();
+	
+	@PostMapping("/downloadfile")
+	public ResponseEntity<Resource> downloadFile(@RequestParam("fileid") Long id,
+												 @RequestParam("filename") String filename)  throws IOException, FileUploadErrorException {
+		Resource resource = satfiledataservice.downloadFile(id);
+		Path filePath = get(SATDATA_FOLDER).toAbsolutePath().normalize().resolve(filename);
+		HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add("File-Name", filename);
         httpHeaders.add(CONTENT_DISPOSITION, "attachment;File-Name=" + resource.getFilename());
         return ResponseEntity.ok().contentType(MediaType.parseMediaType(Files.probeContentType(filePath)))
                 .headers(httpHeaders).body(resource);
-    }
-	
-	@PostMapping("/uploadfile")
-	public ResponseEntity<SatelliteFileData> uploadFile(@RequestParam("file") MultipartFile multipartFile,
-											 @RequestParam("uploader") String uploader)  throws IOException, FileUploadErrorException {
-		SatelliteFileData satelliteFileDate = satfiledataservice.uploadFile(multipartFile, uploader);
-		return new ResponseEntity<>(satelliteFileDate, OK);
 	}
 	
+	 @GetMapping("/list")
+	    public ResponseEntity<List<SatelliteFileData>> getAllFiles() {
+	        List<SatelliteFileData> satfiles = satfiledataservice.getSatelliteFileDatas();
+	        if (satfiles == null) {
+	        	return new ResponseEntity<>(null, NO_CONTENT);
+	        }else {
+	        	return new ResponseEntity<>(satfiles, OK);
+	        }
+	        
+	    }
+	 @DeleteMapping("/delete/{fileid}")
+	 @PreAuthorize("hasAnyAuthority('satellitedata:delete')")
+	   public ResponseEntity<HttpResponse> deleteUser(@PathVariable("fileid") Long id) throws IOException {
+		  satfiledataservice.deleteFile(id);
+	      return response(OK, FILE_DELETED_SUCCESSFULLY);
+	 }
+	 
+	 private ResponseEntity<HttpResponse> response(HttpStatus httpStatus, String message) {
+	    	HttpResponse body = new HttpResponse(httpStatus.value(), 
+					 							 httpStatus,
+					 							 httpStatus.getReasonPhrase().toUpperCase(),
+					 							 message.toUpperCase());
+	        return new ResponseEntity<>(body, httpStatus);
+	    }
 }
