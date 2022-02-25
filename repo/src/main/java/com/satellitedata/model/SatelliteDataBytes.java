@@ -24,9 +24,111 @@ public class SatelliteDataBytes implements Serializable {
 	private String datatype;
 	private String time;
 	private String sensor;
-	private int checksum;
+	private String checksum;
 	private String filename;
+	private String format;
 	private Date created;
 	private Date modified;
+	
+	public SatelliteDataBytes() {
+		
+	}
+	
+	public SatelliteDataBytes(Long id, String gst, String datatype, String time, String sensor, String checksum,
+			String filename, String format, Date created, Date modified) {
+		super();
+		this.id = id;
+		this.gst = gst;
+		this.datatype = datatype;
+		this.time = time;
+		this.sensor = sensor;
+		this.checksum = checksum;
+		this.filename = filename;
+		this.format = format;
+		this.created = created;
+		this.modified = modified;
+	}
 
+	public Long getId() {
+		return id;
+	}
+
+	public String getFormat() {
+		return format;
+	}
+
+	public void setFormat(String format) {
+		this.format = format;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public String getGst() {
+		return gst;
+	}
+
+	public void setGst(String gst) {
+		this.gst = gst;
+	}
+
+	public String getDatatype() {
+		return datatype;
+	}
+
+	public void setDatatype(String datatype) {
+		this.datatype = datatype;
+	}
+
+	public String getTime() {
+		return time;
+	}
+
+	public void setTime(String time) {
+		this.time = time;
+	}
+
+	public String getSensor() {
+		return sensor;
+	}
+
+	public void setSensor(String sensor) {
+		this.sensor = sensor;
+	}
+
+	public String getChecksum() {
+		return checksum;
+	}
+
+	public void setChecksum(String checksum) {
+		this.checksum = checksum;
+	}
+
+	public String getFilename() {
+		return filename;
+	}
+
+	public void setFilename(String filename) {
+		this.filename = filename;
+	}
+
+	public Date getCreated() {
+		return created;
+	}
+
+	public void setCreated(Date created) {
+		this.created = created;
+	}
+
+	public Date getModified() {
+		return modified;
+	}
+
+	public void setModified(Date modified) {
+		this.modified = modified;
+	}
+
+	
 }
+

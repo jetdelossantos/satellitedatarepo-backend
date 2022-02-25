@@ -7,6 +7,7 @@ import java.util.Date;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -15,6 +16,7 @@ import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Scanner;
 
 import javax.mail.MessagingException;
 
@@ -50,10 +52,12 @@ import com.satellitedata.exception.domain.UserNotFoundException;
 import com.satellitedata.exception.domain.UsernameExistException;
 import com.satellitedata.model.SatelliteFileData;
 import com.satellitedata.model.User;
+import com.satellitedata.repository.SatelliteDataBytesRepository;
 import com.satellitedata.repository.SatelliteFileDataRepository;
 import com.satellitedata.repository.UserRepository;
 import com.satellitedata.service.EmailService;
 import com.satellitedata.service.LoginAttemptService;
+import com.satellitedata.service.SatelliteDataBytesService;
 import com.satellitedata.service.SatelliteFileDataService;
 import com.satellitedata.service.UserService;
 import com.satellitedata.exception.domain.FileUploadErrorException;
@@ -72,8 +76,14 @@ import static org.springframework.http.MediaType.*;
 @Transactional
 public class SatelliteFileDataServiceImpl implements SatelliteFileDataService {
 	
+	private Logger LOGGER = LoggerFactory.getLogger(SatelliteFileDataServiceImpl.class);
+	
 	@Autowired SatelliteFileDataRepository satfiledatarepo;
 
+	@Autowired SatelliteDataBytesService satdatbytesService;
+	
+	@Autowired SatelliteDataBytesRepository satdatbytesRepo;
+	
 	@Override
 	public List<SatelliteFileData> getSatelliteFileDatas() {
 		return satfiledatarepo.findAll();
@@ -81,9 +91,10 @@ public class SatelliteFileDataServiceImpl implements SatelliteFileDataService {
 
 	@Override
 	public SatelliteFileData uploadFile(MultipartFile multipartFile, String uploader) throws FileUploadErrorException, IOException {
+		
 		if(checkValidFile(multipartFile)) {
 			Path filePath = saveFileInStorage(multipartFile);
-			//parseFileForDB(multipartFile);
+			satdatbytesService.parseBytes(multipartFile,multipartFile.getOriginalFilename());
 			SatelliteFileData satelliteDataFile = new SatelliteFileData();
 			satelliteDataFile.setFilename(multipartFile.getOriginalFilename());
 			satelliteDataFile.setUploader(uploader);	
@@ -99,7 +110,7 @@ public class SatelliteFileDataServiceImpl implements SatelliteFileDataService {
 			throw new FileUploadErrorException("File upload error. Invalid file");
 		}
 	}
-
+	
 	private Long getFileByteSize(MultipartFile multipartFile) throws IOException {
 		byte [] bytes=multipartFile.getBytes();
 		return (long) bytes.length;
@@ -109,6 +120,7 @@ public class SatelliteFileDataServiceImpl implements SatelliteFileDataService {
 		byte [] bytes=multipartFile.getBytes();
 		return bytes;
 	}
+	
 
 	private boolean checkValidFile(MultipartFile multipartFile) {
 		String filename = multipartFile.getOriginalFilename().toUpperCase();
@@ -145,7 +157,8 @@ public class SatelliteFileDataServiceImpl implements SatelliteFileDataService {
         	FileUtils.deleteDirectory(new File(satfiledataFolder.toString()));
         }
         if (satelliteFileData != null) {
-            satfiledatarepo.deleteById(satelliteFileData.getId());
+        	satdatbytesRepo.deleteRowsWithFileName(satelliteFileData.getFilename()); 
+            satfiledatarepo.deleteById(satelliteFileData.getId());    
         }
 	}
 

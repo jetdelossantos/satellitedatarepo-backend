@@ -100,6 +100,7 @@ public class SatelliteFileDataController extends ExceptionHandling {
 	        }
 	        
 	    }
+	 
 	 @DeleteMapping("/delete/{fileid}")
 	 @PreAuthorize("hasAnyAuthority('satellitedata:delete')")
 	   public ResponseEntity<HttpResponse> deleteUser(@PathVariable("fileid") Long id) throws IOException {
