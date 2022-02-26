@@ -15,5 +15,5 @@ public interface SatelliteDataBytesService {
 													  String datatpye
 													  );
 	
-	void parseBytes(MultipartFile multipartFile, String filename) throws IOException;
+	void parseBytes(MultipartFile multipartFile, int fileId) throws IOException;
 }
