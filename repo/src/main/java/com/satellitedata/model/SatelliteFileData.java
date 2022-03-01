@@ -21,6 +21,7 @@ public class SatelliteFileData implements Serializable {
 	@Column(nullable = false, updatable = false)
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	private Long id;
+	private String fileuniqueid;
 	private Long filesize;
 	private String filename;
 	private String filenameUrl;
@@ -37,10 +38,11 @@ public class SatelliteFileData implements Serializable {
 	}
 	
 
-	public SatelliteFileData(Long id, Long filesize, String filename, String filenameUrl, byte[] data, String uploader,
+	public SatelliteFileData(Long id, String fileuniqueid, Long filesize, String filename, String filenameUrl, byte[] data, String uploader,
 			String format, int downloads, Date created, Date modified) {
 		super();
 		this.id = id;
+		this.fileuniqueid = fileuniqueid;
 		this.filesize = filesize;
 		this.filename = filename;
 		this.filenameUrl = filenameUrl;
@@ -56,9 +58,19 @@ public class SatelliteFileData implements Serializable {
 	public Long getId() {
 		return id;
 	}
+	
 	public void setId(Long id) {
 		this.id = id;
 	}
+	
+	public String getFileuniqueid() {
+		return fileuniqueid;
+	}
+
+	public void setFileuniqueid(String fileuniqueid) {
+		this.fileuniqueid = fileuniqueid;
+	}
+
 	public String getFilename() {
 		return filename;
 	}

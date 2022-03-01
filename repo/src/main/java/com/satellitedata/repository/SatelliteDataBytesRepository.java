@@ -17,7 +17,7 @@ public interface SatelliteDataBytesRepository extends JpaRepository<SatelliteDat
 			nativeQuery = true)
 	@Modifying
 	@Transactional
-	List<SatelliteDataBytes> findFilteredData(String gst, String databytes);
+	List<SatelliteDataBytes> findFilteredData(String gst, String datatype);
 	
 	@Query(value = "DELETE FROM dbo.satdatabytes WHERE filename = ?1", nativeQuery = true)
 	@Modifying

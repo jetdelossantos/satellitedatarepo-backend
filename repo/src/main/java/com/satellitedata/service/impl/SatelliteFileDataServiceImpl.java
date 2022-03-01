@@ -6,9 +6,11 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Scanner;
 
@@ -18,6 +20,7 @@ import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.tomcat.util.http.fileupload.FileUtils;
 
 import com.satellitedata.model.SatelliteFileData;
@@ -52,46 +55,72 @@ public class SatelliteFileDataServiceImpl implements SatelliteFileDataService {
 	public SatelliteFileData uploadFile(MultipartFile multipartFile, String uploader) throws FileUploadErrorException, IOException {
 		
 		if(checkValidFile(multipartFile)) {
-			Path filePath = saveFileInStorage(multipartFile);
-			
 			SatelliteFileData satelliteDataFile = new SatelliteFileData();
-			satelliteDataFile.setFilename(multipartFile.getOriginalFilename());
+			String fileuniqueid = generateFileUniqueId();
+			satelliteDataFile.setFileuniqueid(fileuniqueid);
+			String newfilename = generateFilePrefix() +"."+ multipartFile.getOriginalFilename();
+			satelliteDataFile.setFilename(newfilename);
 			satelliteDataFile.setUploader(uploader);	
 			satelliteDataFile.setCreated(new Date());
 			satelliteDataFile.setFilesize(getFileByteSize(multipartFile));
 			satelliteDataFile.setData(getFileByteData(multipartFile));
+			Path filePath = saveFileInStorage(multipartFile, fileuniqueid, newfilename);
 			satelliteDataFile.setFilenameUrl(filePath.toString());
 			satelliteDataFile.setFormat(getPacketFormat(multipartFile));
 			satelliteDataFile.setDownloads(0);
 			satfiledatarepo.save(satelliteDataFile);
-			satdatbytesService.parseBytes(multipartFile, satelliteDataFile.getId().intValue());
+			satdatbytesService.parseBytes(multipartFile, satelliteDataFile.getFileuniqueid());
 			return satelliteDataFile;
 		} else {
 			throw new FileUploadErrorException("File upload error. Invalid file");
 		}
 	}
 	
+	private String generateFilePrefix() {
+		return new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
+	}
+	
+	private String generateFileUniqueId() {
+		String fileid = RandomStringUtils.randomNumeric(10);
+		while(satfiledatarepo.FindByFileuniqueid(fileid) != null) {
+			fileid = RandomStringUtils.randomNumeric(10);
+		}return fileid;
+	}
+
 	private String getPacketFormat(MultipartFile multipartFile) throws IOException {
 		File file = convertMultiPartToFile(multipartFile);
-		Scanner scan = new Scanner(file);
-		try {
-			String[] bytes = scan.nextLine().split("\\s+");
-			if (bytes.length == 16 || bytes.length == 32 ) {
-				return (String.valueOf(bytes.length));
-			} else {
-				return null;
+		Scanner scan = new Scanner(file, StandardCharsets.UTF_8);
+		if (scan.hasNextLine()) {
+			try {
+				String[] bytes = scan.nextLine().split("\\s+");
+				if (bytes.length == 16 || bytes.length > 16 ) {
+					return (String.valueOf(bytes.length));
+				} else {
+					return null;
+				}
+			} catch (Exception ex) {
+	            ex.printStackTrace();
+	            return null;
+	        }
+			finally {
+				scan.close();
 			}
-		} finally {
+		} else {
+			System.out.println("No next line");
 			scan.close();
+			return null;
 		}
+
 	}
 
 	private File convertMultiPartToFile(MultipartFile file ) throws IOException
     {
-        File convFile = new File( file.getOriginalFilename() );
-        FileOutputStream fos = new FileOutputStream( convFile );
-        fos.write( file.getBytes() );
+        File convFile = new File(file.getOriginalFilename());
+        FileOutputStream fos = new FileOutputStream(convFile);
+        fos.write(file.getBytes());
         fos.close();
+        System.out.println(convFile);
+        System.out.println(fos);
         return convFile;
     }
 	
@@ -115,7 +144,7 @@ public class SatelliteFileDataServiceImpl implements SatelliteFileDataService {
 		if(!filename.endsWith(".TXT")) {
 			return false;
 		} else {
-			if (format == 16 || format == 32) {
+			if (format == 16 || format > 16) {
 				return true;
 			} else {
 				return false;
@@ -123,8 +152,7 @@ public class SatelliteFileDataServiceImpl implements SatelliteFileDataService {
 		}
 	}
 
-	private Path saveFileInStorage(MultipartFile multipartFile) throws IOException {
-		String filename = StringUtils.cleanPath(multipartFile.getOriginalFilename());
+	private Path saveFileInStorage(MultipartFile multipartFile, String fileuniqueid, String filename) throws IOException {
 		Path fileStorage = get(SATDATA_FOLDER, filename).toAbsolutePath().normalize();
 		if(!Files.exists(fileStorage)) {
             Files.createDirectories(fileStorage);
@@ -139,28 +167,32 @@ public class SatelliteFileDataServiceImpl implements SatelliteFileDataService {
 	}
 
 	@Override
-	public void deleteFile(Long id) throws IOException {
-		SatelliteFileData satelliteFileData = satfiledatarepo.findSatelliteFileDataById(id);
+	public void deleteFile(String fileuniqueid) throws IOException {
+		SatelliteFileData satelliteFileData = satfiledatarepo.FindByFileuniqueid(fileuniqueid);
         Path satfiledataFolder = Paths.get(SATDATA_FOLDER + satelliteFileData.getFilename()).toAbsolutePath().normalize();
         if (!Files.exists(satfiledataFolder)) {
         	FileUtils.deleteDirectory(new File(satfiledataFolder.toString()));
         }
         if (satelliteFileData != null) {
-        	satdatbytesRepo.deleteRowsWithFileName(String.valueOf(satelliteFileData.getId())); 
+        	FileUtils.forceDelete(new File(satfiledataFolder.toString()));
+        	satdatbytesRepo.deleteRowsWithFileName(satelliteFileData.getFileuniqueid()); 
             satfiledatarepo.deleteById(satelliteFileData.getId());    
         }
 	}
 
 	@Override
-	public Resource downloadFile(Long id) throws IOException {
-		SatelliteFileData satellitefiledata = satfiledatarepo.getById(id);
+	public Resource downloadFile(String fileuniqueid) throws IOException {
+		SatelliteFileData satellitefiledata = satfiledatarepo.FindByFileuniqueid(fileuniqueid);
+		if (satellitefiledata == null){
+			throw new FileNotFoundException(fileuniqueid + " was not found on the database");
+		}
 		String filename = satellitefiledata.getFilename();
 		Path filePath = get(SATDATA_FOLDER).toAbsolutePath().normalize().resolve(filename);
         if(!Files.exists(filePath)) {
             throw new FileNotFoundException(filename + " was not found on the server");
         }
         Resource resource = new UrlResource(filePath.toUri());
-       return resource;
+        return resource;
 	
 	}
 

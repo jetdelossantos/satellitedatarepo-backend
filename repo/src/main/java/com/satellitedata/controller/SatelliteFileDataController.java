@@ -48,6 +48,7 @@ import com.satellitedata.exception.domain.UserNotFoundException;
 import com.satellitedata.exception.domain.UsernameExistException;
 import com.satellitedata.model.SatelliteFileData;
 import com.satellitedata.model.User;
+import com.satellitedata.repository.SatelliteFileDataRepository;
 import com.satellitedata.service.UserService;
 import com.satellitedata.service.SatelliteFileDataService;
 import com.satellitedata.utility.JWTTokenProviderUtility;
@@ -69,6 +70,8 @@ public class SatelliteFileDataController extends ExceptionHandling {
 	 public static final String FILE_DELETED_SUCCESSFULLY = "File deleted successfully";
 	 
 	@Autowired SatelliteFileDataService satfiledataservice;
+	
+	@Autowired SatelliteFileDataRepository satfiledatarepo;
 	//defining a location
 	
 	@PostMapping("/uploadfile")
@@ -78,13 +81,13 @@ public class SatelliteFileDataController extends ExceptionHandling {
 		return new ResponseEntity<>(satelliteFileData, OK);
 	}
 	
-	@PostMapping("/downloadfile")
-	public ResponseEntity<Resource> downloadFile(@RequestParam("fileid") Long id,
-												 @RequestParam("filename") String filename)  throws IOException, FileUploadErrorException {
-		Resource resource = satfiledataservice.downloadFile(id);
-		Path filePath = get(SATDATA_FOLDER).toAbsolutePath().normalize().resolve(filename);
+	@GetMapping("/downloadfile/{fileid}")
+	public ResponseEntity<Resource> downloadFile(@PathVariable("fileid") String fileuniqueid)  throws IOException, FileUploadErrorException {
+		Resource resource = satfiledataservice.downloadFile(fileuniqueid);
+		SatelliteFileData satdatafileD = satfiledatarepo.FindByFileuniqueid(fileuniqueid);
+		Path filePath = get(SATDATA_FOLDER).toAbsolutePath().normalize().resolve(satdatafileD.getFilename());
 		HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add("File-Name", filename);
+        httpHeaders.add("File-Name", satdatafileD.getFilename());
         httpHeaders.add(CONTENT_DISPOSITION, "attachment;File-Name=" + resource.getFilename());
         return ResponseEntity.ok().contentType(MediaType.parseMediaType(Files.probeContentType(filePath)))
                 .headers(httpHeaders).body(resource);
@@ -103,8 +106,8 @@ public class SatelliteFileDataController extends ExceptionHandling {
 	 
 	 @DeleteMapping("/delete/{fileid}")
 	 @PreAuthorize("hasAnyAuthority('satellitedata:delete')")
-	   public ResponseEntity<HttpResponse> deleteUser(@PathVariable("fileid") Long id) throws IOException {
-		  satfiledataservice.deleteFile(id);
+	   public ResponseEntity<HttpResponse> deleteUser(@PathVariable("fileid") String fileuniqueid) throws IOException {
+		  satfiledataservice.deleteFile(fileuniqueid);
 	      return response(OK, FILE_DELETED_SUCCESSFULLY);
 	 }
 	 

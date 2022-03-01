@@ -3,6 +3,7 @@ package com.satellitedata.service.impl;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
@@ -34,17 +35,18 @@ public class SatelliteDataBytesServiceImpl implements SatelliteDataBytesService 
 	}
 
 	@Override
-	public void parseBytes(MultipartFile multipartFile, int fileId) throws IOException {
+	public void parseBytes(MultipartFile multipartFile, String fileuniqueid) throws IOException {
 		File file = convertMultiPartToFile(multipartFile);
-		Scanner scan = new Scanner(file);
+		Scanner scan = new Scanner(file, StandardCharsets.UTF_8);
 		try {
 			while(scan.hasNextLine()) {
-				String[] bytes = scan.nextLine().split("\\s+");
+				String line = scan.nextLine().trim();
+				String[] bytes = line.split("\\s+");
 				if (bytes.length == 16) {
 					SatelliteDataBytes satdataByte = new SatelliteDataBytes();
 					satdataByte.setGst(bytes[0] + "\t" + 
 									   bytes[1] + "\t");
-					satdataByte.setDatatype(bytes[2]);
+					satdataByte.setDatatype(bytes[2] + "\t");
 					satdataByte.setTime(bytes[3] + "\t" + 
 										bytes[4] + "\t" +
 										bytes[5] + "\t" +
@@ -58,15 +60,15 @@ public class SatelliteDataBytesServiceImpl implements SatelliteDataBytesService 
 										  bytes[13] + "\t" +
 										  bytes[14] + "\t");
 					satdataByte.setChecksum(bytes[15] + "\t");
-					satdataByte.setFilename(String.valueOf(fileId));
+					satdataByte.setFilename(String.valueOf(fileuniqueid));
 					satdataByte.setCreated(new Date());
 					satdataByte.setFormat(String.valueOf(bytes.length));
 					satdatbytesRepo.save(satdataByte);
-				} else if (bytes.length == 32) {
+				} else if (bytes.length > 17) {
 					SatelliteDataBytes satdataByte = new SatelliteDataBytes();
 					satdataByte.setGst(bytes[0] + "\t" + 
 									   bytes[1] + "\t");
-					satdataByte.setDatatype(bytes[2]);
+					satdataByte.setDatatype(bytes[2] + "\t");
 					satdataByte.setTime(bytes[3] + "\t" + 
 										bytes[4] + "\t" +
 										bytes[5] + "\t" +
@@ -96,7 +98,7 @@ public class SatelliteDataBytesServiceImpl implements SatelliteDataBytesService 
 										  bytes[29] + "\t" +
 										  bytes[30] + "\t");
 					satdataByte.setChecksum(bytes[31] + "\t");
-					satdataByte.setFilename(String.valueOf(fileId));
+					satdataByte.setFilename(String.valueOf(fileuniqueid));
 					satdataByte.setCreated(new Date());
 					satdataByte.setFormat(String.valueOf(bytes.length));
 					satdatbytesRepo.save(satdataByte);

@@ -39,6 +39,7 @@ import com.satellitedata.exception.domain.PasswordIncorrectException;
 import com.satellitedata.exception.domain.UserNotFoundException;
 import com.satellitedata.exception.domain.UsernameExistException;
 import com.satellitedata.model.User;
+import com.satellitedata.repository.UserRepository;
 import com.satellitedata.service.UserService;
 import com.satellitedata.utility.JWTTokenProviderUtility;
 
@@ -53,7 +54,10 @@ import static com.satellitedata.constant.SecurityConstant.JWT_TOKEN_HEADER;
 public class UserController extends ExceptionHandling{
 	public static final String EMAIL_SENT = "An email with a new password was sent to: ";
     public static final String USER_DELETED_SUCCESSFULLY = "User deleted successfully";
+    
 	@Autowired UserService userService;
+	
+	@Autowired UserRepository userRepo;
 	
 	@Autowired AuthenticationManager authenticationManager;
 	
@@ -143,10 +147,10 @@ public class UserController extends ExceptionHandling{
 
     @GetMapping("/list")
     public ResponseEntity<List<User>> getAllUsers() {
-        List<User> users = userService.getUsers();
+        List<User> users = userRepo.findAll();
         return new ResponseEntity<>(users, OK);
     }
-
+    
     @GetMapping("/resetpassword/{email}")
     public ResponseEntity<HttpResponse> resetPassword(@PathVariable("email") String email) throws MessagingException, EmailNotFoundException {
         userService.resetPassword(email);
