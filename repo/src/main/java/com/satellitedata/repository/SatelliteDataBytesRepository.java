@@ -13,11 +13,12 @@ public interface SatelliteDataBytesRepository extends JpaRepository<SatelliteDat
 
 	@Query(value = "DECLARE @GST VARCHAR(20) = ?1\r\n"
 			+ "DECLARE @DATATYPE  VARCHAR(20) = ?2\r\n"
-			+ "SELECT * FROM dbo.satdatabytes WHERE gst LIKE @GST AND datatype LIKE @DATATYPE",
+			+ "DECLARE @FORMAT  VARCHAR(20) = ?3\r\n"
+			+ "SELECT * FROM dbo.satdatabytes WHERE gst LIKE @GST AND datatype LIKE @DATATYPE AND format LIKE @FORMAT",
 			nativeQuery = true)
 	@Modifying
 	@Transactional
-	List<SatelliteDataBytes> findFilteredData(String gst, String datatype);
+	List<SatelliteDataBytes> findFilteredData(String gst, String datatype, String format);
 	
 	@Query(value = "DELETE FROM dbo.satdatabytes WHERE filename = ?1", nativeQuery = true)
 	@Modifying

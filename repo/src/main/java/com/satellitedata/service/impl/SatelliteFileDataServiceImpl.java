@@ -93,7 +93,7 @@ public class SatelliteFileDataServiceImpl implements SatelliteFileDataService {
 		if (scan.hasNextLine()) {
 			try {
 				String[] bytes = scan.nextLine().split("\\s+");
-				if (bytes.length == 16 || bytes.length > 16 ) {
+				if (bytes.length == 16 || bytes.length == 32 ) {
 					return (String.valueOf(bytes.length));
 				} else {
 					return null;
@@ -144,7 +144,7 @@ public class SatelliteFileDataServiceImpl implements SatelliteFileDataService {
 		if(!filename.endsWith(".TXT")) {
 			return false;
 		} else {
-			if (format == 16 || format > 16) {
+			if (format == 16 || format == 32) {
 				return true;
 			} else {
 				return false;

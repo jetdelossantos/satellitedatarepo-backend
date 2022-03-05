@@ -38,8 +38,10 @@ public class SatelliteDataBytesController {
 	
 	@PostMapping("/getsatbytes")
 	public ResponseEntity<List<SatelliteDataBytes>> getbytes(@RequestParam("gst") String gst,
-													  		 @RequestParam("datatype") String datatype) {
-		List<SatelliteDataBytes> satellitedatabytes = satdatabytesRepo.findFilteredData(gst, datatype);
+															 @RequestParam("format") String format,
+													  		 @RequestParam("datatype") String datatype)
+	{
+		List<SatelliteDataBytes> satellitedatabytes = satdatabytesRepo.findFilteredData(gst, datatype, format);
 		 if (satellitedatabytes.isEmpty()) {
 	        return new ResponseEntity<>(null, NO_CONTENT);
 	     } else {
@@ -50,8 +52,9 @@ public class SatelliteDataBytesController {
 	@PostMapping("/downloadsatbytes")
 	public ResponseEntity<String> downloadbytes(@RequestParam("gst") String gst,
 			 									@RequestParam("datatype") String datatype,
+			 									@RequestParam("format") String format,
 			 									@RequestParam("requester") String requester) {
-		List<SatelliteDataBytes> satellitedatabytes = satdatabytesRepo.findFilteredData(gst, datatype);
+		List<SatelliteDataBytes> satellitedatabytes = satdatabytesRepo.findFilteredData(gst, datatype, format);
 		 if (satellitedatabytes.isEmpty()) {
 	        return new ResponseEntity<>(null, NO_CONTENT);
 	     } else {

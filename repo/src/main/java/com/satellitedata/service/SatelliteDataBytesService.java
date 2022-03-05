@@ -12,7 +12,8 @@ public interface SatelliteDataBytesService {
 	List<SatelliteDataBytes> getSatelliteDataBytes();
 	
 	List<SatelliteDataBytes> findFilteredSatelliteDataBytes(String gst,
-													  String datatpye
+													  String datatpye,
+													  String format
 													  );
 	
 	void parseBytes(MultipartFile multipartFile, String fileuniqueid) throws IOException;

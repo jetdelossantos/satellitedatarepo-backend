@@ -30,8 +30,9 @@ public class SatelliteDataBytesServiceImpl implements SatelliteDataBytesService 
 
 	@Override
 	public List<SatelliteDataBytes> findFilteredSatelliteDataBytes(String gst, 
-																   String datatpye) {
-		return satdatbytesRepo.findFilteredData(gst, datatpye);
+																   String datatpye,
+																   String format) {
+		return satdatbytesRepo.findFilteredData(gst, datatpye, format);
 	}
 
 	@Override
@@ -64,7 +65,7 @@ public class SatelliteDataBytesServiceImpl implements SatelliteDataBytesService 
 					satdataByte.setCreated(new Date());
 					satdataByte.setFormat(String.valueOf(bytes.length));
 					satdatbytesRepo.save(satdataByte);
-				} else if (bytes.length > 17) {
+				} else if (bytes.length == 32) {
 					SatelliteDataBytes satdataByte = new SatelliteDataBytes();
 					satdataByte.setGst(bytes[0] + "\t" + 
 									   bytes[1] + "\t");
