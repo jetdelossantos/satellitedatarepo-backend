@@ -111,9 +111,14 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         user.setIsactive(true);
         user.setCreated(new Date());
         user.setIsnotlocked(true);
-        user.setRole(ROLE_SUPER_ADMIN.name());
+        if (userRepository.findAll().isEmpty()) {
+        	 user.setRole(ROLE_SUPER_ADMIN.name());
+        	 user.setAuthorities(ROLE_SUPER_ADMIN.getAuthorities());
+        } else {
+        	user.setRole(ROLE_USER.name());
+       	 	user.setAuthorities(ROLE_USER.getAuthorities());
+        }
         user.setProfileImageUrl(getTemporaryProfileImageUrl(username));
-        user.setAuthorities(ROLE_SUPER_ADMIN.getAuthorities());
         userRepository.save(user);
         LOGGER.info("New user password: " + password);
         emailService.sendNewPasswordEmail(firstName, password, email);
