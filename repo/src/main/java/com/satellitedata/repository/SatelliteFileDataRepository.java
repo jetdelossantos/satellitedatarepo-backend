@@ -18,5 +18,9 @@ public interface SatelliteFileDataRepository extends JpaRepository <SatelliteFil
 	@Query(value = "Select TOP 1 * from dbo.satdatafiles WHERE fileuniqueid = ?1", nativeQuery = true)
 	@Transactional
 	SatelliteFileData FindByFileuniqueid(String fileid);
+	
+	@Query(value = "SELECT * From dbo.satdatafiles order by created desc", nativeQuery = true)
+	@Transactional
+	List<SatelliteFileData> findAllOrderByCreatedAsc();
 
 }

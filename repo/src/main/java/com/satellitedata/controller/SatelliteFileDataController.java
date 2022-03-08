@@ -75,6 +75,7 @@ public class SatelliteFileDataController extends ExceptionHandling {
 	//defining a location
 	
 	@PostMapping("/uploadfile")
+	@PreAuthorize("hasAnyAuthority('satellitedata:create')")
 	public ResponseEntity<SatelliteFileData> uploadFile(@RequestParam("file") MultipartFile multipartFile,
 														@RequestParam("uploader") String uploader)  throws IOException, FileUploadErrorException {
 		SatelliteFileData satelliteFileData = satfiledataservice.uploadFile(multipartFile, uploader);

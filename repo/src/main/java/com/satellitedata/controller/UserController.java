@@ -85,6 +85,7 @@ public class UserController extends ExceptionHandling{
     }
     
     @PostMapping("/add")
+    @PreAuthorize("hasAnyAuthority('user:create')")
     public ResponseEntity<User> addNewUser(@RequestParam("firstname") String firstName,
                                            @RequestParam("lastname") String lastName,
                                            @RequestParam("username") String username,
@@ -107,6 +108,7 @@ public class UserController extends ExceptionHandling{
     }
 	
     @PostMapping("/update")
+    @PreAuthorize("hasAnyAuthority('user:update')")
     public ResponseEntity<User> update(@RequestParam("currentUsername") String currentUsername,
                                        @RequestParam("firstname") String firstName,
                                        @RequestParam("lastname") String lastName,
