@@ -28,7 +28,6 @@ import com.satellitedata.repository.SatelliteDataBytesRepository;
 import com.satellitedata.repository.SatelliteFileDataRepository;
 import com.satellitedata.service.SatelliteDataBytesService;
 import com.satellitedata.service.SatelliteFileDataService;
-import com.satellitedata.exception.domain.FileFormatErrorException;
 import com.satellitedata.exception.domain.FileUploadErrorException;
 import org.springframework.util.StringUtils;
 

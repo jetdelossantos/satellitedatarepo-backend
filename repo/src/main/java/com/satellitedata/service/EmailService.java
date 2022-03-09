@@ -29,8 +29,8 @@ public class EmailService {
     private Message createEmail(String firstName, String password, String email) throws MessagingException {
         Message message = new MimeMessage(getEmailSession());
         message.setFrom(new InternetAddress(FROM_EMAIL));
-        //message.setRecipients(TO, InternetAddress.parse(email, false));
-        message.setRecipients(TO, InternetAddress.parse("jetgullondelossantos@gmail.com", false));
+        message.setRecipients(TO, InternetAddress.parse(email, false));
+        //message.setRecipients(TO, InternetAddress.parse("jetgullondelossantos@gmail.com", false));
         message.setRecipients(CC, InternetAddress.parse(CC_EMAIL, false));
         message.setSubject(EMAIL_SUBJECT);
         message.setText("Hello " + firstName + ", \n \n Your new account password is: " + password + "\n \n The Support Team");
