@@ -103,7 +103,7 @@ public class SatelliteFileDataController extends ExceptionHandling {
 	        	return new ResponseEntity<>(satfiles, OK);
 	        }
 	        
-	    }
+	 }
 	 
 	 @DeleteMapping("/delete/{fileid}")
 	 @PreAuthorize("hasAnyAuthority('satellitedata:delete')")
@@ -112,11 +112,35 @@ public class SatelliteFileDataController extends ExceptionHandling {
 	      return response(OK, FILE_DELETED_SUCCESSFULLY);
 	 }
 	 
+	 @GetMapping("/totalbytes")
+	 public ResponseEntity<String> getTotalBytes() {
+		 List<Integer> filebytesList = satfiledatarepo.findTotalFileSizes();
+	        if (filebytesList.isEmpty()) {
+	        	return new ResponseEntity<>(null, NO_CONTENT);
+	        }else {
+	        	Integer totalFileByteSize = 0;
+	        	for(Integer filebyte: filebytesList ) {
+	        		totalFileByteSize += filebyte;
+	        	}
+	        	return new ResponseEntity<>(totalFileByteSize.toString(), OK);
+	        }   
+	 }
+	 
+	 @GetMapping("/totalfiles")
+	 public ResponseEntity<String> getTotalFiles() {
+		 Integer count = satfiledatarepo.findTotalFileCount();
+	        if (count == null || count == 0) {
+	        	return new ResponseEntity<>(null, NO_CONTENT);
+	        }else {
+	        	return new ResponseEntity<>(count.toString(), OK);
+	        }   
+	 }
+	 
 	 private ResponseEntity<HttpResponse> response(HttpStatus httpStatus, String message) {
 	    	HttpResponse body = new HttpResponse(httpStatus.value(), 
 					 							 httpStatus,
 					 							 httpStatus.getReasonPhrase().toUpperCase(),
 					 							 message.toUpperCase());
 	        return new ResponseEntity<>(body, httpStatus);
-	    }
+	 }
 }

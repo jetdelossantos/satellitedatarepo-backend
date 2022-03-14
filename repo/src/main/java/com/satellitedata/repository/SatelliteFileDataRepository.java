@@ -22,5 +22,13 @@ public interface SatelliteFileDataRepository extends JpaRepository <SatelliteFil
 	@Query(value = "SELECT * From dbo.satdatafiles order by created desc", nativeQuery = true)
 	@Transactional
 	List<SatelliteFileData> findAllOrderByCreatedAsc();
+	
+	@Query(value = "SELECT filesize from dbo.satdatafiles", nativeQuery = true)
+	@Transactional
+	List<Integer> findTotalFileSizes();
+	
+	@Query(value = "SELECT Count(*) from dbo.satdatafiles", nativeQuery = true)
+	@Transactional
+	Integer findTotalFileCount();
 
 }
